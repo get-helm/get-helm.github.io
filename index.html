@@ -300,6 +300,68 @@
     .skip-link a:hover {
       text-decoration: underline;
     }
+
+    /* Phase 2 section */
+    .phase2-section {
+      padding: 0 0 64px;
+    }
+
+    .phase2-heading {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .phase2-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    .phase2-steps {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+
+    .phase2-steps ol {
+      list-style: none;
+      counter-reset: steps;
+      display: grid;
+      gap: 10px;
+    }
+
+    .phase2-steps li {
+      counter-increment: steps;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .phase2-steps li::before {
+      content: counter(steps);
+      background: var(--moss-dark);
+      color: var(--moss-light);
+      font-size: 11px;
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .phase2-steps li strong {
+      color: var(--text);
+    }
   </style>
 </head>
 <body>
@@ -391,6 +453,33 @@
 
   <hr class="divider">
 
+  <!-- Phase 2: Already set up section -->
+  <div id="cowork-prompt" class="phase2-section">
+    <div class="cta-heading phase2-heading">Already have your machine set up?</div>
+    <div class="cta-sub phase2-sub">If your dedicated machine is already running Claude Desktop with Cowork mode enabled, use this prompt instead — it skips the hardware setup and goes straight to installing HELM.</div>
+
+    <div class="phase2-steps">
+      <ol>
+        <li><span><strong>Open Claude Desktop</strong> on your dedicated machine (the one staying on 24/7)</span></li>
+        <li><span><strong>Make sure Cowork mode is enabled</strong> — look for it in Claude Desktop settings</span></li>
+        <li><span><strong>Copy the prompt below</strong> and paste it into the chat. Press Enter.</span></li>
+        <li><span><strong>The AI handles the rest</strong> — installing HELM, setting up Discord, and sending your first bot message</span></li>
+      </ol>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn-primary" onclick="copyCoworkPrompt()">
+        <span class="btn-icon">📋</span>
+        Copy install prompt
+      </button>
+      <div id="copy-feedback-2" class="copy-feedback">
+        ✓ Copied — paste into Claude Desktop and press Enter
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
   <!-- Footer -->
   <div class="footer-tagline">
     <strong>You steer the ship, we row.</strong>
@@ -398,7 +487,7 @@
 
 </div>
 
-<!-- Hidden prompt text for clipboard -->
+<!-- Hidden prompt text for clipboard — Phase 1 (pre-install via Claude.ai) -->
 <textarea id="preinstall-prompt" style="position:absolute;left:-9999px;top:-9999px;opacity:0" aria-hidden="true">You are a friendly, patient setup guide helping someone install HELM on their own machine.
 
 WHAT HELM IS:
@@ -432,24 +521,79 @@ First question: do you have a computer that you could leave on 24/7 — one that
 Wait for their answer, then guide them step by step through hardware check, subscription, and setup.
 </textarea>
 
+<!-- Hidden prompt text for clipboard — Phase 2 (install via Claude Desktop Cowork) -->
+<textarea id="cowork-install-prompt" style="position:absolute;left:-9999px;top:-9999px;opacity:0" aria-hidden="true">You are helping someone complete the final step of installing HELM on their machine.
+
+WHAT HELM IS:
+HELM is a personal AI assistant that runs 24/7 on this machine. It connects to Discord and lives there as a bot. The user talks to it in Discord from any device. It reads their email, calendar, and connected tools — summarizes what's happening, answers questions, runs automations on a schedule, and builds tools on request — all through Discord.
+
+WHAT YOU'RE DOING:
+Install HELM from GitHub, create the user's Discord bot, and get HELM running so their first bot message appears in Discord.
+
+GITHUB REPO: https://github.com/get-helm/helm
+
+INSTALLATION STEPS (run in order, narrate progress):
+1. Check that Homebrew, Node.js, and npm are installed; install any that are missing.
+2. Install Claude Code CLI via npm.
+3. Clone the HELM repo to ~/helm-workspace.
+4. Run npm install in ~/helm-workspace/marvin-bot.
+5. Run the HELM setup script.
+6. Configure HELM to auto-start on reboot.
+
+Never show terminal output to the user. Translate all errors into plain English.
+Narrate progress: "Installing dependencies now — about 2 minutes."
+The user should never open a terminal or type a command.
+
+YOUR APPROACH:
+- One step at a time. Wait for confirmation before the next.
+- Explain why before asking for anything.
+- Celebrate each step completion.
+- If something fails: describe what happened in plain English, suggest one thing to try, and wait.
+
+START HERE:
+Say this exactly:
+
+"Setup is running in the background — I'm installing HELM now. Takes about 2 minutes.
+
+While that runs, let me ask you the most important question in this whole setup: what would you like to call me?
+
+I'll use this name in your Discord server, in every message I send you, and when I reach out about things I've noticed. A few ideas — or type your own: Atlas, Scout, Remi, Flynn, Sage, or something completely different."
+
+Wait for their answer, then continue with name setup and Discord configuration.
+</textarea>
+
 <script>
   function copyAndOpen() {
     const prompt = document.getElementById('preinstall-prompt').value;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(prompt).then(() => {
-        showFeedback();
+        showFeedback('copy-feedback');
         setTimeout(() => window.open('https://claude.ai', '_blank'), 300);
       }).catch(() => {
-        fallbackCopy(prompt);
+        fallbackCopy(prompt, 'preinstall-prompt', 'copy-feedback', true);
       });
     } else {
-      fallbackCopy(prompt);
+      fallbackCopy(prompt, 'preinstall-prompt', 'copy-feedback', true);
     }
   }
 
-  function fallbackCopy(text) {
-    const el = document.getElementById('preinstall-prompt');
+  function copyCoworkPrompt() {
+    const prompt = document.getElementById('cowork-install-prompt').value;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(prompt).then(() => {
+        showFeedback('copy-feedback-2');
+      }).catch(() => {
+        fallbackCopy(prompt, 'cowork-install-prompt', 'copy-feedback-2', false);
+      });
+    } else {
+      fallbackCopy(prompt, 'cowork-install-prompt', 'copy-feedback-2', false);
+    }
+  }
+
+  function fallbackCopy(text, elId, feedbackId, openClaude) {
+    const el = document.getElementById(elId);
     el.style.position = 'fixed';
     el.style.top = '0';
     el.style.left = '0';
@@ -459,12 +603,12 @@ Wait for their answer, then guide them step by step through hardware check, subs
     el.style.position = 'absolute';
     el.style.left = '-9999px';
     el.style.opacity = '0';
-    showFeedback();
-    setTimeout(() => window.open('https://claude.ai', '_blank'), 300);
+    showFeedback(feedbackId);
+    if (openClaude) setTimeout(() => window.open('https://claude.ai', '_blank'), 300);
   }
 
-  function showFeedback() {
-    const fb = document.getElementById('copy-feedback');
+  function showFeedback(id) {
+    const fb = document.getElementById(id);
     fb.classList.add('visible');
     setTimeout(() => fb.classList.remove('visible'), 6000);
   }
