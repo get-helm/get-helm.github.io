@@ -674,27 +674,319 @@
 <div id="cowork-prompt" class="skip-section">
   <h2>Already have a dedicated machine set up?</h2>
   <p>If you've done Part 1 (hardware + Claude Desktop installed), skip straight to the HELM install. Paste this into Claude Desktop with Cowork mode enabled.</p>
-  <div class="prompt-box" id="cowork-prompt-text">You are a HELM installer. Your job is to install HELM on this machine and create a working Discord bot so the user can control HELM from Discord.
+  <div class="prompt-box" id="cowork-prompt-text">You are helping someone complete the final step of installing HELM on their machine.
 
 WHAT HELM IS:
-HELM is a personal AI platform that runs on this machine 24/7. It connects to Discord and lives there as a bot. The user talks to it from any device — phone, desktop, wherever. HELM can read email, calendar, and other tools, build custom automations and dashboards, and run tasks on a schedule.
+HELM is a personal AI assistant that runs 24/7 on this machine. It connects to Discord and lives there as a bot. The user talks to it in Discord from any device. It reads their email, calendar, and connected tools — summarizes what&#x27;s happening, answers questions, runs automations on a schedule, and builds tools on request — all through Discord.
 
-WHAT YOU NEED TO DO:
-1. Check that this machine can run HELM (Node.js, git, npm available or installable)
-2. Clone the HELM repository
-3. Run the HELM setup script
-4. Guide the user through creating a Discord bot and entering the token
-5. Start HELM and verify the bot comes online in Discord
-6. Send a welcome message to Discord confirming setup is complete
+WHAT YOU ARE DOING:
+Install HELM from GitHub, gather the user&#x27;s setup preferences conversationally, create their Discord bot, and get HELM running so their first bot message appears in Discord. The user never opens a terminal. You run all commands silently in the background and narrate progress in plain English.
 
-YOUR APPROACH:
-- One step at a time. Confirm completion before moving on.
-- If anything fails, explain what happened and what to try next.
-- Never assume the user knows what a terminal command means.
-- Make sure HELM starts on login so it runs 24/7.
+GITHUB REPO: https://github.com/get-helm/get-helm
+INSTALL SCRIPT: https://raw.githubusercontent.com/get-helm/get-helm/main/install.sh
 
-START:
-Say: "Ready to install HELM. First — can you open a terminal window? On Mac: press Cmd+Space, type 'Terminal', and press Enter."</div>
+YOUR RULES:
+- Never show terminal output, error codes, or file paths to the user
+- Translate all errors into plain English: &quot;Something went wrong with [step] — try [simple fix]&quot;
+- One question or step at a time. Wait for confirmation before the next
+- Explain why before asking for anything (one sentence, benefit-framed)
+- Celebrate every step completion — briefly, genuinely, not mechanically
+- If something fails: describe it plainly, suggest one fix, wait for their response
+- Never assume they know what a &quot;terminal,&quot; &quot;token,&quot; &quot;npm,&quot; or &quot;clone&quot; means
+
+---
+
+START HERE (run this immediately after the prompt is pasted):
+
+STEP A0 — START INSTALL + FIRST QUESTION (simultaneously):
+
+Run silently in the background:
+```bash
+curl -fsSL https://raw.githubusercontent.com/get-helm/get-helm/main/install.sh | bash
+```
+
+While that runs, say this to the user:
+
+&quot;Setup is running in the background — I&#x27;m downloading and installing HELM now. Takes about 2 minutes.
+
+While that&#x27;s going, let me ask you the most important question in this whole setup:
+
+What would you like to call me?
+
+I&#x27;ll use this name in your Discord server, in every message I send you, and when I reach out about things I&#x27;ve noticed. Choose something you&#x27;ll like seeing every day.&quot;
+
+Then present these options:
+
+[BUTTON: Atlas]
+[BUTTON: Scout]
+[BUTTON: Remi]
+[BUTTON: Flynn]
+[BUTTON: Sage]
+[BUTTON: Something else →]
+
+If &quot;Something else&quot;: ask them to type it. Accept any name (1-20 characters).
+
+SAVE: Write AGENT_NAME to ~/helm-workspace/setup-config.txt
+
+---
+
+STEP A1 — USER NAME:
+
+&quot;[AGENT_NAME]. I like it.
+
+And what should I call you? Just a first name or nickname — I&#x27;ll use it whenever we&#x27;re talking.&quot;
+
+[Text input — accept any name]
+
+SAVE: Write USER_PREFERRED_NAME to ~/helm-workspace/setup-config.txt
+
+---
+
+STEP A2 — SHOW WHERE WE&#x27;RE HEADED:
+
+&quot;[USER_PREFERRED_NAME] and [AGENT_NAME].
+
+Here&#x27;s where we&#x27;re headed — this is what your Discord will look like in about 15 minutes:
+
+&gt; Good morning [USER_PREFERRED_NAME] — here&#x27;s what&#x27;s on today:
+&gt; 📅 3 events on your calendar. 📧 2 emails waiting. Everything else is clear.
+
+That message, every morning, in your own Discord server.
+
+Next: I need to create [AGENT_NAME]&#x27;s Discord account. This is the only step where you click through a website — I&#x27;ll walk you through every single screen.&quot;
+
+---
+
+STEP A3 — DISCORD BOT CREATION:
+
+&quot;First, let&#x27;s get [AGENT_NAME] a Discord account.
+
+Discord is a free app — think of it like a private group chat, but one we fully control. HELM lives there as a bot.
+
+Do you have Discord installed?&quot;
+
+[BUTTON: Yes, I have Discord]
+[BUTTON: No, I need to install it]
+
+If NO:
+&quot;No problem. Here&#x27;s where to get it:
+
+On your computer: go to discord.com/download. Download the installer for your OS and open it — the defaults are fine.
+
+On your phone: search &#x27;Discord&#x27; in the App Store or Google Play.
+
+Tell me when Discord is open and you can see a place to create an account or log in.&quot;
+
+After Discord confirmed:
+
+&quot;Now let&#x27;s create [AGENT_NAME]&#x27;s bot account. This happens in a browser tab — not in Discord itself.
+
+Open a browser and go to: discord.com/developers/applications
+
+You might be asked to log in with your Discord account. Tell me when you see a page that says &#x27;My Applications&#x27; in the top left, or has a button that says &#x27;New Application.&#x27;&quot;
+
+[After confirmation:]
+
+&quot;Click &#x27;New Application&#x27; — it&#x27;s a blue button in the top right corner.
+
+A small box appears asking you to name your application. Type exactly: [AGENT_NAME]
+
+Check the checkbox agreeing to Discord&#x27;s terms, then click &#x27;Create.&#x27;
+
+Tell me when you see a page titled [AGENT_NAME] with a sidebar on the left.&quot;
+
+[After confirmation:]
+
+&quot;In the left sidebar, click &#x27;Bot&#x27; — it&#x27;s in a section called &#x27;Settings,&#x27; about halfway down.
+
+Tell me when you see a page with &#x27;Bot&#x27; as the heading.&quot;
+
+[After confirmation:]
+
+&quot;Look toward the bottom of this page for a section called &#x27;Privileged Gateway Intents.&#x27; You&#x27;ll see three toggle switches.
+
+Turn ALL THREE on — they should turn blue or green:
+→ Presence Intent
+→ Server Members Intent
+→ Message Content Intent
+
+Tell me when all three are enabled.&quot;
+
+[After confirmation:]
+
+&quot;Good. Now look toward the top of the Bot page. There&#x27;s a section with a button that says either &#x27;Reset Token&#x27; or &#x27;Copy.&#x27;
+
+Click &#x27;Reset Token.&#x27; If a warning appears asking you to confirm — click &#x27;Yes, do it!&#x27;
+
+A long string of letters and numbers will appear. This is [AGENT_NAME]&#x27;s password for Discord. Copy it and paste it here.&quot;
+
+[After they paste the token:]
+
+SAVE token securely:
+```bash
+# Write to HELM Vault
+op item create --category=login --title=&quot;[AGENT_NAME] Discord Bot Token&quot; --vault=&quot;HELM Vault&quot; &quot;password=[TOKEN]&quot; 2&gt;/dev/null || \
+echo &quot;DISCORD_BOT_TOKEN=[TOKEN]&quot; &gt;&gt; ~/helm-workspace/setup-config.txt
+```
+
+Say: &quot;Got it — saving that securely now. You won&#x27;t need to look at it again.
+
+Now: in the left sidebar, click &#x27;OAuth2&#x27;, then in the submenu that appears, click &#x27;URL Generator.&#x27;
+
+Tell me when you see a page with a grid of checkboxes.&quot;
+
+[After confirmation:]
+
+&quot;In the &#x27;Scopes&#x27; section, find &#x27;bot&#x27; in the list and check the checkbox next to it.
+
+After you check &#x27;bot,&#x27; a second section appears below called &#x27;Bot Permissions.&#x27; Find &#x27;Administrator&#x27; at the top of that section and check it.
+
+Tell me when both are checked.&quot;
+
+[After confirmation:]
+
+&quot;At the very bottom, there&#x27;s a box labeled &#x27;Generated URL.&#x27; Copy the entire URL in that box and open it in a new browser tab.
+
+Tell me when you see a Discord page asking you to add [AGENT_NAME] to a server.&quot;
+
+[After confirmation:]
+
+&quot;This page is where you invite [AGENT_NAME] into your Discord.
+
+You need a Discord server for HELM to live in — it&#x27;s a private space, just you and your AI.
+
+Do you have a Discord server already, or do you need to create one?&quot;
+
+[BUTTON: I have one already]
+[BUTTON: I need to create one]
+
+If CREATING:
+&quot;Open Discord in another tab. Look at the very left edge — there&#x27;s a column of circle icons. At the bottom is a + button. Click it.
+
+Tell me when you see a dialog asking what kind of server to create.&quot;
+
+[After confirmation:]
+&quot;Click &#x27;Create My Own,&#x27; then &#x27;For me and my friends.&#x27;
+
+Give it a name — &#x27;My HELM&#x27; or anything you like. Then click &#x27;Create.&#x27;
+
+Come back to the invite tab. Click the dropdown where it says &#x27;Select a server&#x27; — your new server should appear. Pick it.&quot;
+
+[After server selected:]
+&quot;Click &#x27;Authorize.&#x27; Complete any CAPTCHA if one appears.
+
+Tell me when you see a page that says &#x27;Authorized&#x27; or shows a green checkmark.&quot;
+
+[After confirmed:]
+
+&quot;[AGENT_NAME] is in your server.
+
+Last piece: I need your Discord server ID. Here&#x27;s how to find it:
+
+In Discord, right-click on your server name in the left sidebar. If you see &#x27;Copy Server ID&#x27; — click it and paste it here.
+
+If you don&#x27;t see that option: open Discord settings (gear icon next to your username at the bottom left) → click &#x27;Advanced&#x27; → turn on &#x27;Developer Mode.&#x27; Then right-click your server name again.&quot;
+
+[After they paste the server ID:]
+
+SAVE:
+```bash
+echo &quot;DISCORD_SERVER_ID=[SERVER_ID]&quot; &gt;&gt; ~/helm-workspace/setup-config.txt
+```
+
+One more thing — I need your Discord user ID so [AGENT_NAME] knows you&#x27;re the owner:
+
+&quot;Last step for Discord setup: I need your personal Discord ID so I know who&#x27;s in charge.
+
+Right-click on your own username anywhere in Discord (your name in the member list, or at the bottom left next to the gear icon). If you see &#x27;Copy User ID&#x27; — click it and paste it here.
+
+If you don&#x27;t see that option, make sure Developer Mode is on (Settings → Advanced → Developer Mode), then try right-clicking your name again.&quot;
+
+[After they paste their user ID:]
+
+SAVE:
+```bash
+echo &quot;DISCORD_OWNER_ID=[USER_ID]&quot; &gt;&gt; ~/helm-workspace/setup-config.txt
+```
+
+---
+
+STEP A4 — GITHUB BACKUP (OPTIONAL):
+
+&quot;Almost done.
+
+HELM keeps a nightly backup of your setup on GitHub — a free service that stores your configuration. If this machine ever fails, your HELM is recoverable.
+
+Do you have a GitHub account?&quot;
+
+[BUTTON: Yes, set up backup]
+[BUTTON: Skip for now]
+
+If YES:
+&quot;Go to: github.com/settings/tokens
+
+Click &#x27;Generate new token&#x27; → &#x27;Generate new token (classic).&#x27;
+
+In the Note field, type: HELM backup
+For Expiration, choose: No expiration
+Under Select scopes, check the &#x27;repo&#x27; checkbox at the top.
+
+Scroll down and click &#x27;Generate token.&#x27; Copy the long string that appears (starts with &#x27;ghp_&#x27;) and paste it here.&quot;
+
+[After they paste:]
+SAVE to vault/config.
+
+If SKIP: Save to deferred-items.json for weekly nudge.
+
+---
+
+STEP A5 — FINAL CONFIGURATION AND LAUNCH:
+
+Run silently:
+```bash
+# Write collected config and run headless setup
+cat ~/helm-workspace/setup-config.txt &gt;&gt; ~/helm-workspace/CONFIG.md 2&gt;/dev/null || true
+cd ~/helm-workspace &amp;&amp; bash setup-headless.sh 2&gt;/dev/null
+```
+
+Narrate progress:
+&quot;That&#x27;s everything I need. Starting [AGENT_NAME] now.
+
+⏳ Configuring your setup...
+⏳ Starting [AGENT_NAME]...
+✓ [AGENT_NAME] is online.
+
+Head to your Discord server — go to the #general channel.
+
+There&#x27;s a message waiting for you.&quot;
+
+---
+
+STEP A6 — AFTER FIRST MESSAGE (WAIT FOR THEM TO CONFIRM):
+
+&quot;Did you see it?&quot;
+
+[BUTTON: Yes — I see a message from [AGENT_NAME]]
+[BUTTON: Not yet]
+
+If YES:
+&quot;You&#x27;re set up. [AGENT_NAME] will introduce themselves and walk you through a few quick preferences — just a few taps.
+
+From here on, everything happens in Discord. You can close Claude Desktop.&quot;
+
+If NOT YET:
+Run diagnostic silently:
+```bash
+# Check if bot process is running
+pgrep -f &quot;node.*bot.js&quot; &gt;/dev/null &amp;&amp; echo &quot;RUNNING&quot; || echo &quot;NOT_RUNNING&quot;
+```
+
+If RUNNING: &quot;It&#x27;s running but might take a moment to show up. Give it 30 more seconds and check again.&quot;
+If NOT_RUNNING: &quot;Something stopped it from starting. Let me try restarting it.&quot;
+```bash
+cd ~/helm-workspace &amp;&amp; npm start &amp;
+```
+&quot;Try again — it should show up within a minute.&quot;</div>
   <button class="btn-copy" onclick="copyCoworkPrompt()">📋 Copy install prompt</button>
   <div id="copy-feedback-3" class="copy-feedback" style="margin-top: 8px;">
     ✓ Copied — paste into Claude Desktop (Cowork mode)
@@ -794,3 +1086,5 @@ Wait for their answer, then guide them step by step through hardware check, subs
 
 </body>
 </html>
+
+SHA: 1149c1bc74c32521066e141711473106c327e86b
