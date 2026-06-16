@@ -671,9 +671,9 @@
   </div>
 </div>
 
-<div id="cowork-prompt" class="skip-section">
+<div id="install-prompt" class="skip-section">
   <h2>Already have a dedicated machine set up?</h2>
-  <p>If you've done Part 1 (hardware + Claude Desktop installed), skip straight to the HELM install. Paste this into Claude Desktop with Cowork mode enabled.</p>
+  <p>If you've done Part 1 (hardware + Claude Desktop installed), skip straight to the HELM install. Open Claude Desktop → click the <strong>Code tab</strong> → set environment to <strong>Local</strong> (not Cowork — that's a sandboxed environment that can't install software). Then paste this prompt and press Enter.</p>
   <div class="prompt-box" id="cowork-prompt-text">You are helping someone complete the final step of installing HELM on their machine.
 
 WHAT HELM IS:
@@ -989,7 +989,7 @@ cd ~/helm-workspace &amp;&amp; npm start &amp;
 &quot;Try again — it should show up within a minute.&quot;</div>
   <button class="btn-copy" onclick="copyCoworkPrompt()">📋 Copy install prompt</button>
   <div id="copy-feedback-3" class="copy-feedback" style="margin-top: 8px;">
-    ✓ Copied — paste into Claude Desktop (Cowork mode)
+    ✓ Copied — paste into Claude Desktop (Code tab → Local)
   </div>
 </div>
 
@@ -1009,9 +1009,21 @@ WHAT YOU'RE GUIDING THEM THROUGH:
 The full setup has four parts. You handle parts 1 and 2, then hand off to Claude Desktop for parts 3 and 4:
 
 Part 1 — Hardware check: confirm or find the right machine.
-Part 2 — Prerequisites: Claude subscription, machine wipe if needed, Claude Desktop installed on clean machine, Cowork mode enabled.
-Part 3 — HELM installation: happens in Claude Desktop (a separate app). You give them the exact prompt to paste.
+Part 2 — Prerequisites: Claude subscription, machine wipe if needed, Claude Desktop installed on clean machine, Code tab open and set to Local (NOT Cowork — that's sandboxed and won't work).
+Part 3 — HELM installation: happens in Claude Desktop's Code tab, Local environment, on the dedicated machine. You give them the exact install prompt to paste there.
 Part 4 — Discord setup: happens automatically after Part 3.
+
+CRITICAL — HOW TO OPEN CODE TAB → LOCAL (guide them through this carefully):
+After Claude Desktop is installed and open on the dedicated machine, the user must switch to the Code tab in Local mode. Tell them step by step:
+1. Look for two tabs near the top of the Claude Desktop window: "Claude" and "Code". Click "Code".
+2. Inside the Code panel, look for a small label near the top that shows the current environment. It may say "Cowork" or something else. Click it.
+3. A dropdown appears. Select "Local" (this connects to their actual machine — unlike "Cowork" which is sandboxed and cannot install software like HELM).
+4. The label should now show "Local". That's what we need.
+If they can't find the Code tab: tell them to update Claude Desktop to the latest version first (Help menu → Check for Updates).
+
+HOW TO HAND OFF (after Code/Local is confirmed):
+Say: "Perfect — you're ready for the install step. On the dedicated machine, in Claude Desktop's Code tab (Local mode), paste the install prompt I'll give you and press Enter. The AI there will walk you through everything and get HELM running automatically."
+Then give them the Phase-2 install prompt visible at the bottom of the HELM setup page (https://get-helm.github.io/#install-prompt).
 
 YOUR APPROACH:
 - One question or step at a time. Never show two at once.
